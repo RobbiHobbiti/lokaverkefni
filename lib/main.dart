@@ -1,33 +1,35 @@
-To begin creating an RPG-style game, follow these steps:
+import 'dart:async';
+import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
+import 'package:flutter/material.dart';
+import 'package:flame/game.dart';
 
-1. **Plan the Game Design**:
-  - Define the story, characters, and setting.
-  - Decide on the gameplay mechanics (e.g., combat, exploration, inventory, leveling system).
+void main() {
+    runApp(GameWidget(game: MyGame()));
+}
 
-2. **Choose a Framework**:
-  - For Dart, consider using the Flame game engine, which is designed for 2D games.
+class MyGame extends FlameGame {
 
-3. **Set Up the Project**:
-  - Ensure your Dart/Flutter environment is set up.
-  - Add the necessary dependencies (e.g., `flame` package).
+  SpriteAnimationComponent player = SpriteAnimationComponent(size: Vector2(120 * 5, 80 * 5));
 
-4. **Create the Game Structure**:
-  - Design the main game loop.
-  - Plan the game scenes (e.g., menu, battle, exploration).
+  @override
+  FutureOr<void> onLoad() {
+    super.onLoad();
+    loadAnimation();
 
-5. **Implement Core Features**:
-  - Character creation and stats.
-  - Map and environment.
-  - Combat system.
-  - Inventory and items.
+    add(player);
+  }
 
-6. **Add Visuals and Audio**:
-  - Create or source sprites, animations, and sound effects.
+  Future<void> loadAnimation() async {
+    SpriteSheet spriteSheet = SpriteSheet(
+      image: await images.load('_attackCombo2hit.png'), srcSize: Vector2(120, 80),
+    );
+    SpriteAnimation animation = spriteSheet.createAnimation(
+      row: 0, stepTime: 0.05, from: 1, to: 9,
+    );
 
-7. **Test and Iterate**:
-  - Playtest frequently to refine mechanics and fix bugs.
+    player.animation = animation;
 
-8. **Polish and Optimize**:
-  - Improve performance and add final touches.
+  }
 
-Start small and expand as you progress.
+}
