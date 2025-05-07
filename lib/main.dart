@@ -10,7 +10,7 @@ void main() {
 
 class MyGame extends FlameGame {
 
-  SpriteAnimationComponent player = SpriteAnimationComponent(size: Vector2(120 * 5, 80 * 5));
+  SpriteAnimationComponent player = SpriteAnimationComponent(size: Vector2(40 * 5, 40 * 5));
 
   @override
   FutureOr<void> onLoad() {
@@ -22,10 +22,10 @@ class MyGame extends FlameGame {
 
   Future<void> loadAnimation() async {
     SpriteSheet spriteSheet = SpriteSheet(
-      image: await images.load('_attackCombo2hit.png'), srcSize: Vector2(120, 80),
+      image: await images.load('run_down_40x40.png'), srcSize: Vector2(40, 40),
     );
     SpriteAnimation animation = spriteSheet.createAnimation(
-      row: 0, stepTime: 0.05, from: 1, to: 9,
+      row: 0, stepTime: 0.09, from: 1, to: 6,
     );
 
     player.animation = animation;
