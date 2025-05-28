@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:lokaverkfni/backGround/hitboxes.dart';
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -33,27 +34,63 @@ class MyApp extends StatelessWidget {
 }
 
 
+class Player extends SpriteAnimationComponent with CollisionCallbacks {
+  bool isColliding = false;
+  Vector2 velocity = Vector2.zero();
+
+  Player() : super(size: Vector2(50, 50), position: Vector2(100, 100));
+
+  @override
+  Future<void> onLoad() async {
+    await super.onLoad();
+    add(RectangleHitbox());
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (!isColliding) {
+      position += velocity * dt;
+    }
+  }
+
+  @override
+  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
+    isColliding = true;
+  }
+
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    super.onCollisionEnd(other);
+    isColliding = false;
+  }
+}
+
 class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
   late SpriteAnimation downAnimation;
   late SpriteAnimation upAnimation;
   late SpriteAnimation rightAnimation;
   late SpriteAnimation leftAnimation;
   late SpriteAnimation idleAnimation;
-
-  late SpriteAnimationComponent player;
+  late Player player;
+  late SpriteComponent playerSprite;
   late SpriteComponent background;
-  final double moveSpeed = 200;
+  final double moveSpeed = 100;
   final Set<LogicalKeyboardKey> _keysPressed = {};
-  final double zoomLevel = 1.5;
+  final double zoomLevel = 1.3;
   final double characterSize = 100;
 
-  // 0 = idle, 1 = down, 2 = up, 3 = right, 4 = left
+
+
   int direction = 0;
+
 
   @override
   FutureOr<void> onLoad() async {
     super.onLoad();
 
+    
     // Load background
     try {
       final Sprite backgroundSprite = await loadSprite('demoBackground.png');
@@ -62,12 +99,11 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
         size: size,
         position: Vector2(0, 0),
       );
-      add(background);
       print('Background loaded: ${background.size}');
     } catch (e) {
-      print('Error loading background: $e');
-      add(background);
+      print('Error loading background: $e');;
     }
+
 
     // Load sprite sheet
     try {
@@ -83,21 +119,21 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
       leftAnimation = spriteSheet.createAnimation(row: 3, stepTime: 0.09, from: 1, to: 6);
       idleAnimation = spriteSheet.createAnimation(row: 0, stepTime: 0.09, from: 0, to: 1);
 
-      player = SpriteAnimationComponent()
+      player = Player()
         ..animation = idleAnimation
-        ..position = Vector2(1280, 675)
+        ..position = Vector2(1200, 700)
         ..size = Vector2.all(characterSize);
 
-      add(player);
       print('Player loaded at position: ${player.position}');
     } catch (e) {
       print('Error loading sprite sheet or animations: $e');
-      
     }
+    
+    world.add((background)..add(player)..add(wall));
 
     // Set up camera
     try {
-      await add(world ..add(background)..add(player));
+      await add(world);
       camera = CameraComponent.withFixedResolution(
         world: world,
         width: size.x / zoomLevel,
@@ -136,35 +172,37 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
       direction = 1; // Down
       velocity.y += moveSpeed;
     }
-    if (_keysPressed.contains(LogicalKeyboardKey.keyA)) {
-      direction = 4; // Left
-      velocity.x -= moveSpeed;
+      if (_keysPressed.contains(LogicalKeyboardKey.keyA)) {
+        direction = 4; // Left
+        velocity.x -= moveSpeed;
     }
-    if (_keysPressed.contains(LogicalKeyboardKey.keyD)) {
-      direction = 3; // Right
-      velocity.x += moveSpeed;
+      if (_keysPressed.contains(LogicalKeyboardKey.keyD)) {
+        direction = 3; // Right
+        velocity.x += moveSpeed;
     }
-
-    // Update player animation based on direction
-    switch (direction) {
-      case 0:
-        player.animation = idleAnimation;
-        break;
-      case 1:
-        player.animation = downAnimation;
-        break;
-      case 2:
-        player.animation = upAnimation;
-        break;
-      case 3:
-        player.animation = rightAnimation;
-        break;
-      case 4:
-        player.animation = leftAnimation;
-        break;
+      if (_keysPressed.contains(LogicalKeyboardKey.keyF)) {
+        print('${player.position}'); // Idle
     }
 
-    // Update player position
-    player.position += velocity * dt;
+    player.velocity = velocity;
+
+  // Update player animation based on direction
+  switch (direction) {
+    case 0:
+      player.animation = idleAnimation;
+      break;
+    case 1:
+      player.animation = downAnimation;
+      break;
+    case 2:
+      player.animation = upAnimation;
+      break;
+    case 3:
+      player.animation = rightAnimation;
+      break;
+    case 4:
+      player.animation = leftAnimation;
+      break;
+    }
   }
 }
