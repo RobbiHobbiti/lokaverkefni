@@ -5,8 +5,8 @@ import 'package:flame/collisions.dart';
 
 
  final wall = Wall(
-  position: Vector2(537, 292),
-  size: Vector2(1100, 40),
+  position: Vector2(570, 304),
+  size: Vector2(1170, 10),
  );
 
 class Wall extends SpriteComponent with CollisionCallbacks {
@@ -17,6 +17,8 @@ class Wall extends SpriteComponent with CollisionCallbacks {
   Future<void> onLoad() async {
     await super.onLoad();
     sprite = await Sprite.load('wall.png');
+    position = Vector2(570, 304);
+    size = Vector2(1170, 80);
     add(RectangleHitbox());
   }
 

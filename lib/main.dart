@@ -38,7 +38,7 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
   bool isColliding = false;
   Vector2 velocity = Vector2.zero();
 
-  Player() : super(size: Vector2(50, 50), position: Vector2(100, 100));
+  Player() : super(size: Vector2(40, 40), position: Vector2(100, 100));
 
   @override
   Future<void> onLoad() async {
@@ -51,6 +51,9 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
     super.update(dt);
     if (!isColliding) {
       position += velocity * dt;
+    }else{
+      // If colliding, stop movement
+      velocity = Vector2.zero();
     }
   }
 
@@ -76,7 +79,8 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
   late Player player;
   late SpriteComponent playerSprite;
   late SpriteComponent background;
-  final double moveSpeed = 100;
+
+  final double moveSpeed = 150;
   final Set<LogicalKeyboardKey> _keysPressed = {};
   final double zoomLevel = 1.3;
   final double characterSize = 100;
@@ -181,7 +185,7 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
         velocity.x += moveSpeed;
     }
       if (_keysPressed.contains(LogicalKeyboardKey.keyF)) {
-        print('${player.position}'); // Idle
+        print('${player.position}');
     }
 
     player.velocity = velocity;
