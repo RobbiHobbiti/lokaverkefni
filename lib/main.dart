@@ -7,8 +7,8 @@ import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flame/collisions.dart';
-import 'background/hitboxes.dart';
+import 'package:lokaverkfni/backGround/border.dart';
+import 'player/playerClass.dart';
 
 void main() {
   runApp(MyApp());
@@ -44,58 +44,6 @@ enum MovementState {
   final double yDirection;
 
   const MovementState(this.xDirection, this.yDirection);
-}
-
-class Player extends SpriteAnimationComponent with CollisionCallbacks {
-  MovementState movementState = MovementState.idle;
-  Vector2 velocity = Vector2.zero();
-  final double moveSpeed = 150;
-
-  Player() : super(size: Vector2(100, 100), position: Vector2(1200, 700));
-
-  @override
-Future<void> onLoad() async {
-  await super.onLoad();
-  final hitboxSize = size * 0.8;
-  final hitboxPosition = (size - hitboxSize) / 2;
-  add(RectangleHitbox(position: hitboxPosition, size: hitboxSize));
-  debugMode = true; // Optional, to visualize the hitbox
-}
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-    position += velocity * dt;
-  }
-
-  @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-    if (other is Wall) {
-      // Calculate collision normal
-      final normal = (position - other.position).normalized();
-      // Remove velocity component toward the wall to allow sliding
-      if (velocity.dot(normal) < 0) {
-        velocity -= normal.scaled(velocity.dot(normal));
-        // Update movement state to prevent sticking
-        if (movementState == MovementState.movingLeft && normal.x > 0) {
-          movementState = MovementState.idle;
-        } else if (movementState == MovementState.movingRight && normal.x < 0) {
-          movementState = MovementState.idle;
-        } else if (movementState == MovementState.movingUp && normal.y > 0) {
-          movementState = MovementState.idle;
-        } else if (movementState == MovementState.movingDown && normal.y < 0) {
-          movementState = MovementState.idle;
-        }
-      }
-      print('Player collision at: $intersectionPoints, velocity: $velocity');
-    }
-  }
-
-  @override
-  void onCollisionEnd(PositionComponent other) {
-    super.onCollisionEnd(other);
-  }
 }
 
 class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
@@ -152,9 +100,16 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
       print('Error loading sprite sheet or animations: $e');
     }
 
+
     world.add(background);
     world.add(player);
-    world.add(wall);
+
+    final topBorder = MyBorder(
+      size: Vector2(1352, 40),
+      position: Vector2(0, 292),
+    );
+
+    world.add(topBorder);
 
     // Set up camera
     try {
@@ -165,11 +120,16 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
         height: size.y / zoomLevel,
       );
       camera.follow(player);
-      camera.viewfinder.zoom = zoomLevel;
+      
       add(camera);
     } catch (e) {
       print('Error setting up camera: $e');
     }
+  }
+
+  @override
+  void onGameResize(Vector2 gameSize) {
+  super.onGameResize(gameSize);
   }
 
   @override
