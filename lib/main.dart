@@ -7,7 +7,7 @@ import 'package:flame/input.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lokaverkfni/backGround/border.dart';
+import 'package:lokaverkfni/backGround/borders.dart';
 import 'player/playerClass.dart';
 
 void main() {
@@ -104,12 +104,32 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
     world.add(background);
     world.add(player);
 
-    final topBorder = MyBorder(
-      size: Vector2(1352, 40),
-      position: Vector2(0, 292),
+    final topBorder = MyTopBorder(
+      size: Vector2(2600, 40),
+      position: Vector2(0, -40),
     );
 
+    final bottomBorder = MyBottomBorder(
+      size: Vector2(2600, 40),
+      position: Vector2(0, size.y),
+    );
+
+    final leftBorder = MyLeftBorder(
+      size: Vector2(40, size.y + 40),
+      position: Vector2(-40, -40),
+    );
+
+    final rightBorder = MyRightBorder(
+      size: Vector2(40, size.y + 40),
+      position: Vector2(size.x, -40),
+    );
+
+
     world.add(topBorder);
+    world.add(bottomBorder);
+    world.add(leftBorder);
+    world.add(rightBorder);
+
 
     // Set up camera
     try {
