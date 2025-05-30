@@ -1,7 +1,5 @@
 import 'package:flame/components.dart';
-import 'package:lokaverkfni/main.dart';
 import 'package:lokaverkfni/player/playerClass.dart';
-import 'package:lokaverkfni/backGround/hitboxes.dart';
 import 'package:flame/collisions.dart';
 
 class MyTopBorder extends PositionComponent with CollisionCallbacks {

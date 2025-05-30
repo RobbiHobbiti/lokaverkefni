@@ -10,6 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:lokaverkfni/backGround/borders.dart';
 import 'package:lokaverkfni/backGround/hitboxes.dart';
 import 'player/playerClass.dart';
+import 'player/sword.dart';
+import 'player/inventory.dart';
 
 
 void main() {
@@ -28,6 +30,9 @@ class MyApp extends StatelessWidget {
           },
           child: GameWidget(
             game: MyGame(),
+            overlayBuilderMap: {
+              'Inventory': (context, game) => InventoryOverlay(player: (game as MyGame).player),
+            },
           ),
         ),
       ),
@@ -89,6 +94,20 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
       print('Player loaded at position: ${player.position}');
     } catch (e) {
       print('Error loading sprite sheet or animations: $e');
+    }
+
+    // Load sword
+    try {
+      final Sprite swordSprite = await loadSprite('sword.png');
+      final sword = SwordComponent(
+        sprite: swordSprite,
+        position: Vector2(1200, 500),
+      )
+      ..priority = 1;
+      world.add(sword);
+      print('Sword loaded: ${sword.position}');
+    } catch (e) {
+      print('Error loading sword sprite: $e');
     }
 
 
@@ -154,8 +173,18 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
 
  @override
     KeyEventResult onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    super.onKeyEvent(event, keysPressed);
     _keysPressed.clear();
     _keysPressed.addAll(keysPressed);
+
+  if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.keyF) {
+    player.inventoryOpen = !player.inventoryOpen;
+    if (player.inventoryOpen) {
+      overlays.add('Inventory');
+    } else {
+      overlays.remove('Inventory');
+    }
+  }
 
     player.handleMovement(
       _keysPressed,

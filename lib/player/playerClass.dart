@@ -27,6 +27,7 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
   final double moveSpeed = 150;
   late RectangleHitbox hitbox;
   late Vector2 previousPosition;
+  final List<String> inventory = [];
 
   Player() : super(size: Vector2(100, 100), position: Vector2(1200, 700));
 
@@ -60,7 +61,7 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
     velocity.x += moveSpeed;
   }
   if (keysPressed.contains(LogicalKeyboardKey.keyF)) {
-    print('Player position: $position');
+    
   }
 
   // Update animation
@@ -164,4 +165,6 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
   void onCollisionEnd(PositionComponent other) {
     super.onCollisionEnd(other);
   }
+
+  bool inventoryOpen = false;
 }
