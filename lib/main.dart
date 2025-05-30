@@ -11,6 +11,7 @@ import 'package:lokaverkfni/backGround/borders.dart';
 import 'package:lokaverkfni/backGround/hitboxes.dart';
 import 'player/playerClass.dart';
 import 'player/sword.dart';
+import 'player/rpg.dart';
 import 'player/inventory.dart';
 
 
@@ -31,7 +32,11 @@ class MyApp extends StatelessWidget {
           child: GameWidget(
             game: MyGame(),
             overlayBuilderMap: {
-              'Inventory': (context, game) => InventoryOverlay(player: (game as MyGame).player),
+              'Inventory': (context, game) => InventoryOverlay(player: (game as MyGame).player, onDropItem: (String item) {
+                game.player.inventory.remove(item);
+                game.overlays.remove('Inventory');
+                game.overlays.add('Inventory');
+                },),
             },
           ),
         ),
@@ -109,6 +114,21 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
     } catch (e) {
       print('Error loading sword sprite: $e');
     }
+
+    // Load RPG
+        try {
+      final Sprite RpgSprite = await loadSprite('RPG.png');
+      final Rpg = RpgComponent(
+        sprite: RpgSprite,
+        position: Vector2(1400, 500),
+      )
+      ..priority = 2;
+      world.add(Rpg);
+      print('Rpg loaded: ${Rpg.position}');
+    } catch (e) {
+      print('Error loading Rpg sprite: $e');
+    }
+
 
 
 

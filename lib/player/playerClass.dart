@@ -92,7 +92,7 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
     final hitboxPosition = (size - hitboxSize) / 2; // miðja hitbox
     hitbox = RectangleHitbox(position: hitboxPosition, size: hitboxSize);
     add(hitbox);
-    debugMode = true; // Optional, to visualize the hitbox
+    debugMode = true;
   }
   
 // previousPosition er fyrir collision stopping
