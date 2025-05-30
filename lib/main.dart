@@ -8,7 +8,9 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lokaverkfni/backGround/borders.dart';
+import 'package:lokaverkfni/backGround/hitboxes.dart';
 import 'player/playerClass.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -90,9 +92,8 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
     }
 
 
-    world.add(background);
-    world.add(player);
 
+  // Border hitboxin
     final topBorder = MyTopBorder(
       size: Vector2(2600, 40),
       position: Vector2(0, -40),
@@ -113,15 +114,25 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
       position: Vector2(size.x, -40),
     );
 
-
+    // Adda öllum hitboxum/player/backgroundi í world
+    world.add(background);
+    world.add(player);
     world.add(topBorder);
     world.add(bottomBorder);
     world.add(leftBorder);
     world.add(rightBorder);
+    world.add(wall);
+    world.add(Sign);
+    world.add(SmallWater);
+    world.add(Puddle);
+    world.add(BottomBridge);
+    world.add(BigWater);
+    world.add(WaterLeft);
 
 
     // Set up camera
     try {
+      // Adda wrrold inní leikinn
       await add(world);
       camera = CameraComponent.withFixedResolution(
         world: world,

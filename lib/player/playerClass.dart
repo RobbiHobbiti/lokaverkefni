@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 import 'package:flutter/services.dart';
 import 'package:lokaverkfni/backGround/borders.dart';
-import 'package:lokaverkfni/main.dart';
+import 'package:lokaverkfni/backGround/hitboxes.dart';
 
 
 
@@ -30,7 +30,8 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
 
   Player() : super(size: Vector2(100, 100), position: Vector2(1200, 700));
 
-  
+
+  // Movement handeling
   void handleMovement(
   Set<LogicalKeyboardKey> keysPressed, {
   required SpriteAnimation idleAnimation,
@@ -86,14 +87,14 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    final hitboxSize = size * 0.8;
-    final hitboxPosition = (size - hitboxSize) / 2;
+    final hitboxSize = size * 0.7; // hitbox stærð
+    final hitboxPosition = (size - hitboxSize) / 2; // miðja hitbox
     hitbox = RectangleHitbox(position: hitboxPosition, size: hitboxSize);
     add(hitbox);
     debugMode = true; // Optional, to visualize the hitbox
   }
   
-
+// previousPosition er fyrir collision stopping
   @override
   void update(double dt) {
     super.update(dt);
@@ -101,13 +102,23 @@ class Player extends SpriteAnimationComponent with CollisionCallbacks {
     position += velocity * dt;
   }
 
+
+// Collision handling
   @override
   void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
     if (other is MyTopBorder ||
         other is MyBottomBorder ||
         other is MyLeftBorder ||
-        other is MyRightBorder) {
+        other is MyRightBorder ||
+        other is Wall ||
+        other is sign||
+        other is smallWater||
+        other is puddle||
+        other is bottomBridge||
+        other is bigWater||
+        other is waterLeft) {
+      // Reset position and velocity on collision
         position = previousPosition;
         velocity = Vector2.zero();
       final playerRect = hitbox.toAbsoluteRect();
