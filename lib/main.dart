@@ -33,18 +33,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-enum MovementState {
-  idle(0, 0),
-  movingUp(0, -1),
-  movingDown(0, 1),
-  movingRight(1, 0),
-  movingLeft(-1, 0);
 
-  final double xDirection;
-  final double yDirection;
-
-  const MovementState(this.xDirection, this.yDirection);
-}
 
 class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDetection {
   late SpriteAnimation downAnimation;
@@ -152,53 +141,19 @@ class MyGame extends FlameGame with HasKeyboardHandlerComponents, HasCollisionDe
   super.onGameResize(gameSize);
   }
 
-  @override
-  KeyEventResult onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+ @override
+    KeyEventResult onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     _keysPressed.clear();
     _keysPressed.addAll(keysPressed);
 
-    // Update movement state and velocity
-    player.velocity = Vector2.zero();
-    player.movementState = MovementState.idle;
-
-    if (_keysPressed.contains(LogicalKeyboardKey.keyW)) {
-      player.movementState = MovementState.movingUp;
-      player.velocity.y -= player.moveSpeed;
-    }
-    if (_keysPressed.contains(LogicalKeyboardKey.keyS)) {
-      player.movementState = MovementState.movingDown;
-      player.velocity.y += player.moveSpeed;
-    }
-    if (_keysPressed.contains(LogicalKeyboardKey.keyA)) {
-      player.movementState = MovementState.movingLeft;
-      player.velocity.x -= player.moveSpeed;
-    }
-    if (_keysPressed.contains(LogicalKeyboardKey.keyD)) {
-      player.movementState = MovementState.movingRight;
-      player.velocity.x += player.moveSpeed;
-    }
-    if (_keysPressed.contains(LogicalKeyboardKey.keyF)) {
-      print('Player position: ${player.position}');
-    }
-
-    // Update player animation based on movement state
-    switch (player.movementState) {
-      case MovementState.idle:
-        player.animation = idleAnimation;
-        break;
-      case MovementState.movingDown:
-        player.animation = downAnimation;
-        break;
-      case MovementState.movingUp:
-        player.animation = upAnimation;
-        break;
-      case MovementState.movingRight:
-        player.animation = rightAnimation;
-        break;
-      case MovementState.movingLeft:
-        player.animation = leftAnimation;
-        break;
-    }
+    player.handleMovement(
+      _keysPressed,
+      idleAnimation: idleAnimation,
+      upAnimation: upAnimation,
+      downAnimation: downAnimation,
+      leftAnimation: leftAnimation,
+      rightAnimation: rightAnimation,
+    );
 
     return KeyEventResult.handled;
   }
